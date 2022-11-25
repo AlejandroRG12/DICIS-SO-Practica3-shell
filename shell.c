@@ -1,13 +1,13 @@
 #include "shell.h"
 
 void shell(){
-    char hostname[PATH_MAX+1];
-    char login[PATH_MAX+1];
+    char name[PATH_MAX+1];
     char directory[PATH_MAX+1];
+    char login[PATH_MAX+1];
     char flag[] = "/";
 
     //sustitucion de infomacion
-    gethostname(hostname, sizeof(hostname));
+    gethostname(name, sizeof(name));
     getlogin_r(login, sizeof(login));
     getcwd(directory, sizeof(directory));
 
@@ -20,7 +20,7 @@ void shell(){
         }
     }
 
-    printf(COLOR_VERDE "[%s@%s " ANSI_COLOR_RESET ,login,hostname);
+    printf(COLOR_VERDE "[%s@%s " ANSI_COLOR_RESET ,login,name);
     printf("%s]$ ",directory);
 }
 
@@ -39,68 +39,69 @@ void commandSpace(char* comando){
         cadena[i+1] = "\0";
     }
 
-    commandBasic(i,cadena);
+    basicCommand(i,cadena);
 }
 
 
-void pPComando(char* comandoPipe){
-    char p1Cadena[CARACTER_MAX_COMAND];
-    char p2Cadena[CARACTER_MAX_COMAND];
+void pipePunterCommand(char* comandoPipe){
+    char cadenaN1[CARACTER_MAX_COMAND];
+    char cadenaN2[CARACTER_MAX_COMAND];
     const char delimitador[] = "|";
 
     //para el ingreso de comandos
     char *token = strtok(comandoPipe, delimitador);
-    strcpy(p1Cadena,token);
+    strcpy(cadenaN1,token);
     token = strtok(NULL, delimitador);
-    strcpy(p2Cadena,token);
+    strcpy(cadenaN2,token);
 	
-    commandPipe(p1Cadena,p2Cadena);
+    pipeCommand(cadenaN1,cadenaN2);
 }
 
 void pOComando(char* comandoOut) {
-    char p1Cadena[CARACTER_MAX_COMAND];
-    char p2Cadena[CARACTER_MAX_COMAND];
+    char cadenaN1[CARACTER_MAX_COMAND];
+    char cadenaN2[CARACTER_MAX_COMAND];
     const char delimitador[] = ">";
 
     //insertar comado
     char *token = strtok(comandoOut, delimitador);
-    strcpy(p1Cadena,token);
+    strcpy(cadenaN1,token);
     token = strtok(NULL, delimitador);
-    strcpy(p2Cadena,token);
+    strcpy(cadenaN2,token);
 
-    commandOutFile(p1Cadena, p2Cadena);
+    outFileCommand(cadenaN1, cadenaN2);
 }
 
 void readCommand(char* comando){
-    int pipe = 124, salida = 62;
+    int pipe = 124;
+    int salida = 62;
 
     /* Si hay pipe. */
     if (strchr(comando, pipe)) {
-        pPComando(comando);
+        pipePunterCommand(comando);
     } else if (strchr(comando, salida)) { //Si hay salida.
         pOComando(comando);
-	} else {  /* Comando basico. */
-        commandSpace(comando);
+	} else {  
+        commandSpace(comando);  //comando basico
     }    
 }
 
 
-void commandBasic(int argc, char* argv[]){
+void basicCommand(int argc, char* argv[]){
     argv[argc] = NULL;
 
     execvp(argv[0], argv);
 
-    fprintf(stderr,":( %s: no esta definido.\n", argv[1]);
+    fprintf(stderr,"%sERROR: Comando no establecido\n", argv[1]);
     exit(EXIT_FAILURE);
 }
 
 
-void commandPipe(char* pComando, char* sComando){
+void pipeCommand(char* pComando, char* sComando){
     pid_t pid;
     int fd[2];
 
     if (pipe(fd) == -1) {
-	    perror("Creating pipe");
+	    perror("Creando |");
 	    exit(EXIT_FAILURE);
     }
 
@@ -116,7 +117,7 @@ void commandPipe(char* pComando, char* sComando){
 	        readCommand(sComando);
 
         case -1:
-	        perror("fork() failed)");
+	        perror("Error");
     	    exit(EXIT_FAILURE);
 
         default:
@@ -130,14 +131,14 @@ void commandPipe(char* pComando, char* sComando){
     }
 }
 
-void commandOutFile(char* comando, char* salida){
+void outFileCommand(char* comando, char* salida){
 
     char cadena[MAXSTR];
 	int s;
 	int file; /* descriptor del archivo que se va a usar. */
 	
 	bzero(cadena, sizeof(char)*MAXSTR);
-	remove_spaces(salida);
+	spacesRemove(salida);
 	file = open(salida, O_CREAT | O_WRONLY | O_APPEND, S_IRUSR | S_IWUSR);
 	
 	assert(file != -1);
@@ -148,7 +149,7 @@ void commandOutFile(char* comando, char* salida){
 }
 
 
-void remove_spaces(char* str) {
+void spacesRemove(char* str) {
     char *write = str, *read = str;
 	
 	do {
