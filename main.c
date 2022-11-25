@@ -18,7 +18,13 @@ int main(void){
         scanf(" %255[^\n]",comando);
 
         //si escribimos en la terminal el comando exit podremos salir de la shell
+        //ya sea usando el comando "exit" o "quit"
         if (!strcmp("exit",comando)){
+            printf("Saliendo del Shell...\n");
+            break;
+            exit(EXIT_SUCCESS);
+        }
+        if (!strcmp("quit",comando)){
             printf("Saliendo del Shell...\n");
             break;
             exit(EXIT_SUCCESS);
@@ -36,12 +42,12 @@ int main(void){
             wait(&estado);
             //si es que esta de salida
             if (WIFEXITED(estado)){
-                if (!(WEXITestado(estado))){
-                    /* Revisión del clear (estético) */
+                if (!(WEXITSTATUS(estado))){
+                    //limpear la consola
                     if(!strcmp("clear",comando)){
                         printf("");
                     } else{
-                        printf("\n:)\n");
+                        printf("\nError al limpiar\n");
                     }
                 } else{
                     printf("\n:(\n");
