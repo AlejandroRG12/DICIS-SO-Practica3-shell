@@ -47,7 +47,7 @@ int main(void){
                     if(!strcmp("clear",comando)){
                         printf("");
                     } else{
-                        printf("\nError al limpiar\n");
+                        printf("\n\n"); //saltos de lina despues de un comando
                     }
                 } else{
                     printf("\n:(\n");
