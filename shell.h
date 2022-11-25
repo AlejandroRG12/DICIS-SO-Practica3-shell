@@ -30,21 +30,21 @@ void readCommand(char* comando);
 void commandSpace(char* comando);
 
 //desglosa un comando pipe y los almacena en un arreglo de punteros
-void pPComando(char* comandoPipe);
+void pipePunterCommand(char* comandoPipe);
 
 // desglosa un comando > y los granda en un arreglo de punteros
 void pOComando(char* comandoOut);
 
 //Esta funcion esta destinada para comandos basicos
-void commandBasic(int argc, char* argv[]);
+void basicCommand(int argc, char* argv[]);
 
 //funcion para el uso de un comando con pipe |
-void commandPipe(char* pComando, char* sComando);
+void pipeCommand(char* pComando, char* sComando);
 
 //para cuando un archivo contiene uns alida >
-void commandOutFile(char* comando, char* salida);
+void outFileCommand(char* comando, char* salida);
 
 //funcion para cuando un cadena de texto contenga espacios en blanco estos sean eliminados
-void remove_spaces(char* str);
+void spacesRemove(char* str);
 
 #endif
